@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Monitoring IoT - Smart Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <!-- jsPDF Library for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <!-- Alert Sound (hidden audio element) -->
+    <audio id="alertSound" preload="auto">
+      <source
+        src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWhz7eeeTRAMUKfh8LdjGwY4kdj0zXksBSR3x/DdkUAKFF607OSqVRQKRZ/g8b5tIgUrgc7y2Yg2CBdpcO3onU0PC1Cn4O+2YhoGOJHY9M15KwUkd8bw3I9AChRbtOzkqlQUCkWf4PG+bSIFKoHO8tmHNggXanDt6J1NEAxQp+DvtmIaBjmS2PTNeSsFJHfG8NyPQAoUW7Ts5KpUFApFn+Dxvm0iBSmBzvLZhzYIF2pw7eidTRAMUKfg77ZiGgY5ktj0zHkrBSR3xvDcj0AKFF207OSqVBQKRZ/g8b5tIgUpgc7y2Yc2CBdqcO3onU0QDFCn4O+2YhoGOZLY9M15KwUkd8bw3I9AChRbtOzkqlQVCkSf4PG+bSIFKYHO8tmHNggXanDt6J1NEAxQp+DvtmIaBjmS2PTMeSsFJHfG8NyPQAoUW7Ts5KpUFApFn+Dxvm0iBSmBzvLZhzYIF2pw7eidTRAMUKfg77ZiGgY5ktj0zHkrBSR3xvDcj0AKFFu07OSqVBQKRZ/g8b5tIgUpgc7y2Yc2CBdqcO3onU0QDFCo4PC2YxoGOJLY9Mx5KwUkd8bw3I9AChRbtOzkqlMUCkWf4PG+bSIFKYHO8tmHNggXanDt6J1NEAxQp+DvtmIaBjmS2PTMeSsFJHfG8NyPQAoUW7Ts5KpUFApFn+DxvmwiBSmBzvLZhzYIF2pw7eidTRAMUKfg77ZiGgY5ktj0zHkrBSR3xvDcj0AKFFu07OSqVBQKRZ/g8b5tIgUpgc7y2Yc2CBdqcO3onU0QDFCn4O+2YhoGOZLY9Mx5KwUkd8bw3I9AChRbtOzkqlQUCkWf4PG+bSIFKYHO8tmHNggXanDt6J1NEAxQp+DvtmIaBjmS2PTMeSsFJHfG8NyPQAoUW7Ts5KpUFApFn+DxvmwiBSmBzvLZhzYIF2pw7eidTRALUKfg77ZiGgY5ktj0zHkrBSR3xvDcj0AKFFu07OSqVBQKRZ/g8b5tIgUpgc7y2Yc2CBdqcO3onU0QDFCn4O+2YhoGOZLY9Mx5KwUkd8bw3I9AChRbtOzkqlQUCkWf4PG+bSIFKYHO8tmHNggXanDt6J1NEAxQp+DvtmIaBjmS2PTMeSsFJHfG8NyPQAoUW7Ts5KpUFApFn+Dxvm0iBSmBzvLZhzYIF2pw7eidTRAMUKfg77ZiGgY5ktj0zHkrBSR3xvDcj0AKFFu07OSqVBQKRZ/g8b5tIgUpgc7y2Yc2CBdqcO3onU0QDFCn4O+2YhoGOZLY9Mx5KwUkd8bw3I9AChRbtOzkqlQUCkWf4PG+bSIFKYHO8tmHNggXanDt6J1NEAxQp+DvtmIaBjmS2PTMeSsFJHfG8NyPQAoUW7Ts5KpUFApFn+Dxvm0iBSmBzvLZhzYIF2pw7eidTRAMUKfg77ZiGgY5ktj0zHkrBSR3xvDcj0AKFFu07OSqVBQKRZ/g8b5tIgU="
+        type="audio/wav"
+      />
+    </audio>
+
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <div class="header-content">
+          <i class="fas fa-home"></i>
+          <div class="header-text">
+            <h1>Dashboard Smart Home</h1>
+            <p>Sistem IoT Kelompok B8 - Monitoring Real-time</p>
+          </div>
+        </div>
+        <div class="header-controls">
+          <!-- Theme Selector Dropdown -->
+          <div class="theme-selector">
+            <button class="theme-btn" id="themeBtn" title="Pilih Theme">
+              <i class="fas fa-palette"></i>
+            </button>
+            <div class="theme-dropdown" id="themeDropdown">
+              <div class="theme-option" data-theme="dark">
+                <i class="fas fa-moon"></i>
+                <span>Dark</span>
+              </div>
+              <div class="theme-option" data-theme="light">
+                <i class="fas fa-sun"></i>
+                <span>Light</span>
+              </div>
+              <div class="theme-option" data-theme="blue">
+                <i class="fas fa-water"></i>
+                <span>Ocean Blue</span>
+              </div>
+              <div class="theme-option" data-theme="purple">
+                <i class="fas fa-gem"></i>
+                <span>Purple Haze</span>
+              </div>
+              <div class="theme-option" data-theme="green">
+                <i class="fas fa-leaf"></i>
+                <span>Forest Green</span>
+              </div>
+            </div>
+          </div>
+          <div class="status-indicator">
+            <span class="status-dot" id="connectionStatus"></span>
+            <span id="connectionText">Menghubungkan...</span>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <!-- Statistics Cards -->
+        <section class="stats-section">
+          <div class="stats-grid">
+            <div class="stat-card stat-temp">
+              <div class="stat-icon">
+                <i class="fas fa-temperature-high"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Rata-rata Suhu</span>
+                <span class="stat-value" id="avgTemp">--°C</span>
+              </div>
+            </div>
+            <div class="stat-card stat-humid">
+              <div class="stat-icon">
+                <i class="fas fa-tint"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Rata-rata Kelembaban</span>
+                <span class="stat-value" id="avgHumid">--%</span>
+              </div>
+            </div>
+            <div class="stat-card stat-max">
+              <div class="stat-icon">
+                <i class="fas fa-arrow-up"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Suhu Tertinggi</span>
+                <span class="stat-value" id="maxTemp">--°C</span>
+              </div>
+            </div>
+            <div class="stat-card stat-min">
+              <div class="stat-icon">
+                <i class="fas fa-arrow-down"></i>
+              </div>
+              <div class="stat-content">
+                <span class="stat-label">Suhu Terendah</span>
+                <span class="stat-value" id="minTemp">--°C</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sensor Cards Section -->
+        <section class="sensor-section">
+          <h2 class="section-title">
+            <i class="fas fa-microchip"></i> Data Sensor Real-time
+          </h2>
+          <div class="cards-container">
+            <!-- Card Suhu (DHT22) -->
+            <div class="card temperature-card">
+              <div class="card-icon">
+                <i class="fas fa-thermometer-half"></i>
+              </div>
+              <div class="card-content">
+                <h3>Suhu (DHT22)</h3>
+                <div class="value-display">
+                  <span class="value" id="temperature">--</span>
+                  <span class="unit">°C</span>
+                </div>
+                <div class="status-badge" id="tempStatus">Normal</div>
+              </div>
+            </div>
+
+            <!-- Card Kelembaban (DHT22) -->
+            <div class="card humidity-card">
+              <div class="card-icon">
+                <i class="fas fa-tint"></i>
+              </div>
+              <div class="card-content">
+                <h3>Kelembaban (DHT22)</h3>
+                <div class="value-display">
+                  <span class="value" id="humidity">--</span>
+                  <span class="unit">%</span>
+                </div>
+                <div class="status-badge" id="humidStatus">Normal</div>
+              </div>
+            </div>
+
+            <!-- Card Kadar Gas (MQ-2) -->
+            <div class="card gas-card">
+              <div class="card-icon">
+                <i class="fas fa-fire"></i>
+              </div>
+              <div class="card-content">
+                <h3>Kadar Gas (MQ-2)</h3>
+                <div class="value-display">
+                  <span class="value" id="gasLevel">--</span>
+                  <span class="unit">ppm</span>
+                </div>
+                <div class="status-badge" id="gasStatus">Normal</div>
+              </div>
+            </div>
+
+            <!-- Card Intensitas Cahaya (LDR) -->
+            <div class="card light-card">
+              <div class="card-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <div class="card-content">
+                <h3>Cahaya (LDR)</h3>
+                <div class="value-display">
+                  <span class="value" id="lightIntensity">--</span>
+                  <span class="unit">%</span>
+                </div>
+                <div class="status-badge" id="lightStatus">Normal</div>
+              </div>
+            </div>
+
+            <!-- Card Jarak Parkir (Ultrasonic) -->
+            <div class="card distance-card">
+              <div class="card-icon">
+                <i class="fas fa-car"></i>
+              </div>
+              <div class="card-content">
+                <h3>Jarak Parkir (Ultrasonic)</h3>
+                <div class="value-display">
+                  <span class="value" id="distance">--</span>
+                  <span class="unit">cm</span>
+                </div>
+                <div class="status-badge" id="distanceStatus">Aman</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Device Status Section -->
+        <section class="device-section">
+          <h2 class="section-title">
+            <i class="fas fa-plug"></i> Status Perangkat
+          </h2>
+          <div class="device-grid">
+            <!-- Lampu Status -->
+            <div class="device-card">
+              <div class="device-icon lamp-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <div class="device-info">
+                <h4>Lampu Ruangan</h4>
+                <span class="device-status" id="lampStatus">OFF</span>
+              </div>
+            </div>
+
+            <!-- Kipas Status -->
+            <div class="device-card">
+              <div class="device-icon fan-icon">
+                <i class="fas fa-fan"></i>
+              </div>
+              <div class="device-info">
+                <h4>Kipas Pendingin</h4>
+                <span class="device-status" id="fanStatus">OFF</span>
+              </div>
+            </div>
+
+            <!-- Buzzer Status -->
+            <div class="device-card">
+              <div class="device-icon buzzer-icon">
+                <i class="fas fa-bell"></i>
+              </div>
+              <div class="device-info">
+                <h4>Buzzer Alarm</h4>
+                <span class="device-status" id="buzzerStatus">OFF</span>
+              </div>
+            </div>
+
+            <!-- Servo/Gate Status -->
+            <div class="device-card">
+              <div class="device-icon gate-icon">
+                <i class="fas fa-door-open"></i>
+              </div>
+              <div class="device-info">
+                <h4>Gerbang Parkir</h4>
+                <span class="device-status" id="gateStatus">TERTUTUP</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section class="chart-section">
+          <h2 class="section-title">
+            <i class="fas fa-chart-line"></i> Grafik Monitoring
+          </h2>
+          <div class="charts-container">
+            <div class="chart-card">
+              <h3>Suhu & Kelembaban (Real-time)</h3>
+              <canvas id="tempHumidChart"></canvas>
+            </div>
+            <div class="chart-card">
+              <h3>Kadar Gas & Cahaya</h3>
+              <canvas id="gasLightChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- AI Prediction Section -->
+        <section class="prediction-section">
+          <h2 class="section-title">
+            <i class="fas fa-robot"></i> AI Prediction (Next Hour)
+          </h2>
+          <div class="prediction-grid">
+            <div class="prediction-card">
+              <div class="prediction-icon">
+                <i class="fas fa-brain"></i>
+              </div>
+              <div class="prediction-content">
+                <h4>Prediksi Suhu</h4>
+                <div class="prediction-value">
+                  <span id="predictedTemp">--</span>°C
+                </div>
+                <small class="prediction-note">Berdasarkan trend data</small>
+              </div>
+            </div>
+            <div class="prediction-card">
+              <div class="prediction-icon">
+                <i class="fas fa-chart-area"></i>
+              </div>
+              <div class="prediction-content">
+                <h4>Trend Suhu</h4>
+                <div class="prediction-trend" id="tempTrend">
+                  <i class="fas fa-minus"></i> Stabil
+                </div>
+                <small class="prediction-note">Status perubahan</small>
+              </div>
+            </div>
+            <div class="prediction-card">
+              <div class="prediction-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="prediction-content">
+                <h4>Risk Level</h4>
+                <div class="risk-level" id="riskLevel">
+                  <span class="risk-badge low">Low</span>
+                </div>
+                <small class="prediction-note">Potensi bahaya</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Info Panel -->
+        <section class="info-section">
+          <div class="info-panel">
+            <div class="info-item">
+              <i class="fas fa-clock"></i>
+              <span>Update Terakhir: <strong id="lastUpdate">--</strong></span>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-wifi"></i>
+              <span>IP ESP32: <strong id="espIP">192.168.1.100</strong></span>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-database"></i>
+              <span>Total Data: <strong id="dataCount">0</strong></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Alert Section -->
+        <div class="alerts" id="alertsContainer">
+          <!-- Alerts will be dynamically added here -->
+        </div>
+      </main>
+
+      <footer>
+        <p>
+          &copy; 2025 IoT Monitoring System - Kelompok B8 | Website Monitoring
+          (Tanpa Kontrol)
+        </p>
+      </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
